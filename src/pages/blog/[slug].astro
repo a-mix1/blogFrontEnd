@@ -1,0 +1,99 @@
+---
+import { supabase } from '../../lib/supabase';
+const { slug } = Astro.params; 
+
+
+//const res = await fetch(`http://localhost:3000/api/blogs/${slug}`);
+const {data:currentBlog,error } = await supabase
+  .from('blogs')
+  .select('title,created_at,cover_image,slug,excerpt,content')
+  .eq('slug',slug)
+  .single()
+
+if (error) {
+  console.log(error)
+}
+---
+
+<div class="blog-container">
+  
+  <h1>{currentBlog.title}</h1>
+  
+  {currentBlog.cover_image && (
+    <img 
+      src={currentBlog.cover_image} 
+      class="cover-image" 
+      loading="lazy"
+      alt={currentBlog.title} 
+    />
+  )}
+
+  
+
+  <div class="content" set:html={currentBlog.content}></div>
+
+</div>
+
+
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    background: #0b0f19; /* same as homepage */
+    color: #e5e7eb;
+    margin: 0;
+  }
+
+  .blog-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1rem;
+  }
+
+  /* COVER IMAGE (shortened) */
+ .cover-image {
+  width: 100%;
+  aspect-ratio: 12/9;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 12px;
+  display: block;
+}
+
+  h1 {
+    margin-bottom: 16px;
+    font-size: 2rem;
+  }
+
+  /* CONTENT */
+  :global(.content p) {
+  margin-bottom: 16px;
+}
+
+:global(.content a) {
+  color: white;
+  text-decoration: underline;
+}
+
+:global(.content img) {
+  width: 80%;
+  border-radius: 10px;
+  margin: 20px 0;
+  loading:lazy;
+  width="1200"
+  height="630"
+}
+
+:global(.content h2) {
+  margin-top: 24px;
+}
+
+:global(.content ul) {
+  padding-left: 20px;
+}
+
+
+.image-skeleton {
+  height: 300px;
+  background: #eee;
+}
+</style>

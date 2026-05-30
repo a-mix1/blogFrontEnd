@@ -1,0 +1,134 @@
+---
+//calls my express api
+const res = await fetch('http://localhost:3000/api/blogs');
+const blogs = await res.json();
+console.log(blogs);
+//filters published blogs
+const publishedBlogs = blogs.filter(b => b.status != 'Published');
+//console.log(publishedBlogs[0].coverImageurl);
+//featured div for the others
+const featured = publishedBlogs[1];
+const rest = publishedBlogs.slice(1);//if i wanted to show other blogs except the featured, not using rn 
+---
+
+<h1>Blogs</h1>
+
+
+
+<!-- the api getting called for get all posts returns the slugs(the title without any spaces) so clicking on it tells astro to render exactly which one-->
+<!--the  structure in astro pages folder is automatically the routes , so looking at the pages its easy to find everything -->
+{/* GRID */}
+<div class="grid">
+  {publishedBlogs.map(blog => (
+    <a href={`/blog/${blog.slug}`} class="card">
+      <img src={blog.cover_image} />
+      <p class="meta">{blog.created_at}</p>
+      <h3>{blog.title}</h3>
+      <h7>{blog.excerpt}</h7>
+    </a>
+  ))}
+</div>
+
+
+
+
+<style>
+
+body {
+  font-family: system-ui, sans-serif;
+  background: #0b0f19;
+  color: #e5e7eb;
+  margin: 0;
+}
+
+h1 {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+/* FEATURED */
+.featured {
+  max-width: 1100px;
+  margin: auto;
+  background: #1f2937;
+  border-radius: 16px;
+  padding: 30px;
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+}
+
+.featured img {
+  width: 320px;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.featured-text {
+  max-width: 500px;
+}
+
+.tag {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-bottom: 10px;
+}
+
+.featured h2 {
+  font-size: 1.8rem;
+  margin: 0 0 10px;
+}
+
+.cta {
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: #60a5fa;
+}
+
+/* GRID */
+.grid {
+  max-width: 1100px;
+  margin: 30px auto;
+  padding: 0 10px;
+
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
+}
+
+/* CARD */
+.card {
+  text-decoration: none;
+  color: inherit;
+  border-radius: 10px;
+  border: 2px solid transparent; /* important */
+  transition: all 0.25s ease;
+}
+
+.card:hover img {
+  border-color: 1px #facc15; /* yellow */
+}
+
+.card img {
+  width: 80%;
+  height: 280px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.card h3 {
+  margin: 8px 0;
+  font-size: 1rem;
+}
+
+.meta {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 6px;
+}
+
+</style>

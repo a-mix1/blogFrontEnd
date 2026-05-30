@@ -1,0 +1,194 @@
+<div class="login-box">
+  <input
+    type="password"
+    id="adminPassword"
+    placeholder="Enter password"
+  />
+
+  <button id="loginBtn">
+    Enter
+  </button>
+
+  <p id="errorMsg"></p>
+</div>
+
+
+<div class="container" id="container">
+  <h1>Create Blog</h1>
+
+  <form id="blogForm">
+
+    <label>Title</label>
+    <input type="text" name="title" required />
+
+    <label>Cover Image</label>
+    <input type="file" name="coverImage" accept="image/*" />
+
+    <label>Doc File</label>
+    <input type="file" name="blogFile" accept=".docx" required />
+
+    <label>Status</label>
+    <select name="status">
+      <option value="Published">Published</option>
+      <option value="draft">Draft</option>
+    </select>
+
+    <button type="submit">Publish Post</button>
+
+  </form>
+</div>
+
+<script>
+
+
+
+const PASSWORD = import.meta.env.PUBLIC_ADMIN_PASSWORD;
+
+  const btn = document.getElementById("loginBtn");
+
+  btn.addEventListener("click", () => {
+    const input = document.getElementById("adminPassword").value;
+    const container = document.getElementById("container");
+    const errorMsg = document.getElementById("errorMsg");
+
+    if (input === PASSWORD) {
+      container.style.display = "block";
+      errorMsg.textContent = "";
+    } else {
+      errorMsg.textContent = "Wrong password";
+    }
+  });
+
+  const form = document.getElementById('blogForm');
+  const button =form.querySelector('button');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    
+    button.disabled = true;
+    button.textContent = 'Uploading...';
+    try{
+    const formData = new FormData(form);
+
+
+    const res = await fetch(`${import.meta.env.PUBLIC_API_URL}/api/blogs/admin`, {
+      method: 'POST',
+      body: formData
+    });
+
+    const data = await res.json();
+    console.log(data);
+  
+    
+    if (!res.ok) {
+    alert(data.message || data.error || 'Upload failed');
+    return;
+     
+        
+  }
+  else
+  {
+      alert('Blog uploaded 🚀');
+      window.location.href = '/'; 
+      return
+  }
+}
+catch(err)
+{
+   button.disabled = false;
+    button.textContent = 'Publish';
+    console.log(err);
+}
+ 
+    
+  });
+</script>
+
+
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    background: #0b0f19;
+    color: #e5e7eb;
+    margin: 0;
+  }
+
+  .container {
+    max-width: 500px;
+    margin: 3rem auto;
+    padding: 24px;
+    background: #111827;
+    border-radius: 14px;
+    border: 1px solid #1f2937;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    display: none;
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* INPUTS */
+  input, select {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #1f2937;
+    background: #020617;
+    color: #e5e7eb;
+    font-size: 0.9rem;
+  }
+
+  input::file-selector-button {
+    background: #1f2937;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    margin-right: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  input:focus, select:focus {
+    outline: none;
+    border-color: #374151;
+  }
+
+  /* LABEL STYLE (optional but nice) */
+  label {
+    font-size: 0.8rem;
+    color: #9ca3af;
+  }
+
+  /* BUTTON */
+  button {
+    margin-top: 10px;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    background: #facc15;
+    color: black;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+
+  button:hover {
+    background: #eab308;
+  }
+
+  /* SUCCESS MESSAGE (optional future use) */
+  .success {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #4ade80;
+    text-align: center;
+  }
+</style>

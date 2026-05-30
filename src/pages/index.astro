@@ -1,0 +1,224 @@
+---
+//calls my express api
+
+import { supabase } from '../lib/supabase';
+import Layout from '../layouts/Layout.astro';
+console.time('supabase');
+const { data,error } = await supabase
+  .from('blogs')
+  .select('title,created_at,cover_image,slug,excerpt')
+  .eq('status', 'Published')
+  .order('created_at', { ascending: false });
+
+
+console.timeEnd('supabase');
+//const blogs = await data.json();
+
+if (error) {
+  console.error(error);
+}
+
+console.log(data);
+//filters published blogs
+
+//console.log(publishedBlogs[0].coverImageurl);
+//featured div for the others
+const featured = data?.[0];
+const rest = data?.slice(1);//if i wanted to show other blogs except the featured, not using rn 
+
+
+ 
+---
+
+<Layout>
+
+<nav class="topbar">
+  <div class="brand">What I've Been Up To</div>
+  <div></div>
+</nav>
+
+{/* FEATURED */}
+{featured && (
+  <a href={`/blog/${featured.slug}`} class="featured">
+    
+    <div class="featured-text">
+      <p class="tag">Featured article</p>
+      <h2>{featured.title}</h2>
+      <p class="meta">5 min read</p>
+
+      <div class="cta">
+        Read full article 
+      </div>
+    </div>
+
+    <img src={featured.cover_image} alt={featured.title}  loading="lazy"  />
+  </a>
+)}
+
+<!-- the api getting called for get all posts returns the slugs(the title without any spaces) so clicking on it tells astro to render exactly which one-->
+<!--the  structure in astro pages folder is automatically the routes , so looking at the pages its easy to find everything -->
+{/* GRID */}
+<div class="grid">
+  {data?.map(blog => (
+    <a href={`/blog/${blog.slug}`} class="card">
+      <img src={blog.cover_image}  class="fade-image" loading="lazy"/>
+      <p class="meta">{blog.created_at}</p>
+      <h3>{blog.title}</h3>
+      <p>{blog.excerpt}</p>
+    </a>
+  ))}
+</div>
+</Layout>
+
+
+
+<style is:global>
+
+
+
+body {
+  font-family: system-ui, sans-serif;
+  background: #0b0f19;
+  color: #e5e7eb;
+  margin: 0;
+  
+}
+
+.topbar {
+  max-width: 1100px;
+  margin: 2rem auto 2.5rem;
+  padding: 0 10px;
+  
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+}
+
+.brand {
+  justify-self: start;
+  
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #94a3b8;;
+
+  font-family: Inter, system-ui, sans-serif;
+}
+
+
+
+/* FEATURED */
+.featured {
+  max-width: 1100px;
+  margin: auto;
+  background: #1f2937;
+  border-radius: 16px;
+  padding: 30px;
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  
+}
+
+.featured img {
+  width: 320px;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 12px;
+   
+}
+
+.featured-text {
+  max-width: 500px;
+}
+
+.tag {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-bottom: 10px;
+}
+
+.featured h2 {
+  font-size: 1.8rem;
+  margin: 0 0 10px;
+}
+
+.cta {
+  margin-top: 20px;
+  font-size: 0.9rem;
+  
+}
+
+/* GRID */
+.grid {
+  max-width: 1100px;
+  margin: 30px auto;
+  padding: 0 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 0.6fr));
+  gap: 18px;
+  
+  align-items: center;
+  justify-items: center;
+  
+  
+}
+
+/* CARD */
+.card {
+  width:100%;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 10px;
+  border: 2px solid transparent; /* important */
+  transition: all 0.25s ease;
+  
+  padding: 20px;
+  
+}
+
+
+.card img {
+  width: 85%;
+  aspect-ratio: 12/9;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 12px;
+  display: block;
+}
+
+.card h3 {
+  margin: 8px 0;
+  font-size: 0.8rem;
+}
+
+.meta {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 6px;
+}
+
+.image-skeleton {
+  height: 300px;
+  background: #eee;
+}
+@media (max-width: 600px) {
+.grid {
+    grid-template-columns: 1fr;
+    
+  }
+
+  .featured {
+    display: none;
+  }
+
+  .brand{
+    font-size: 1rem;
+  }
+
+}
+
+</style>
