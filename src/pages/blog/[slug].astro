@@ -1,6 +1,7 @@
 ---
 import { supabase } from '../../lib/supabase';
 const { slug } = Astro.params; 
+import Layout from '../../layouts/Layout.astro';
 
 
 //const res = await fetch(`http://localhost:3000/api/blogs/${slug}`);
@@ -14,7 +15,7 @@ if (error) {
   console.log(error)
 }
 ---
-
+<Layout>
 <div class="blog-container">
   
   <h1>{currentBlog.title}</h1>
@@ -34,13 +35,17 @@ if (error) {
 
 </div>
 
+</Layout>
 
-<style>
+
+<style is:global>
+  
   body {
     font-family: system-ui, sans-serif;
     background: #0b0f19; /* same as homepage */
     color: #e5e7eb;
     margin: 0;
+    
   }
 
   .blog-container {
@@ -65,16 +70,16 @@ if (error) {
   }
 
   /* CONTENT */
-  :global(.content p) {
+ .content p {
   margin-bottom: 16px;
 }
 
-:global(.content a) {
+.content a {
   color: white;
   text-decoration: underline;
 }
 
-:global(.content img) {
+.content img {
   width: 80%;
   border-radius: 10px;
   margin: 20px 0;
@@ -83,11 +88,11 @@ if (error) {
   height="630"
 }
 
-:global(.content h2) {
+.content h2{
   margin-top: 24px;
 }
 
-:global(.content ul) {
+.content ul {
   padding-left: 20px;
 }
 
@@ -95,5 +100,12 @@ if (error) {
 .image-skeleton {
   height: 300px;
   background: #eee;
+}
+
+
+@media (max-width: 600px) {
+   .content p { font-size: 15px;
+  padding: 10px;}
+ 
 }
 </style>
